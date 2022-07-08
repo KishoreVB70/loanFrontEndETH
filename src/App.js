@@ -10,14 +10,17 @@ import {useEffect, useState} from "react";
 import {ethers} from "ethers";
 
 //Utils
-import abi from "./abi.json";
-import nftAbi from "./nftAbi.json"
+import abi from "./utils/abi.json";
+import nftAbi from "./utils/nftAbi.json"
 
 function App() {
   //Variables
-  let ContractAddress = "0x0EA92e97f4E79aCEDD6666B59924C4Cb8cd32ccc";
+  let goerliAddress = "0x0EA92e97f4E79aCEDD6666B59924C4Cb8cd32ccc";
+  
+
   const [userAccount, setUserAccount] = useState();
   const [details, setDetails] = useState();
+  const [tokenUri, setTokenUri] = useState();
   const [userBalance, setUserBalance] = useState("");
   const [showModal,setShowModal ] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -36,7 +39,7 @@ function App() {
 
     const accounts = await ethereum.request( {method: "eth_accounts"} );
     if(accounts[0]){
-      setUserAccount(accounts[0].substring(0,5));
+      setUserAccount(accounts[0]);
       getDetails();
       getBalance(accounts);
     }
@@ -57,7 +60,7 @@ function App() {
     
     let accounts =await ethereum.request( {method: "eth_requestAccounts"});
     
-    setUserAccount(accounts[0].substring(0,5));
+    setUserAccount(accounts[0]);
     console.log("connected to: ", accounts[0]);
     
     getDetails();
@@ -95,10 +98,13 @@ function App() {
 
     const provider = new ethers.providers.Web3Provider(ethereum);
     const signer = provider.getSigner();
-    const contract = new ethers.Contract(ContractAddress,abi.abi, signer);
+    const contract = new ethers.Contract(goerliAddress,abi.abi, signer);
+    
+
     return contract;
   
   }
+
 
   //Contract functions 
   const askForLoan = async( _nftId, _nftAddress, _amount, _loanClosingDuration, _loanDuration ) => {
@@ -114,7 +120,9 @@ function App() {
       const signer = provider.getSigner();
       const nftContract = new ethers.Contract(_nftAddress,nftAbi.abi, signer);
   
-      await nftContract.approve(ContractAddress, _nftId );
+      await nftContract.approve(goerliAddress, _nftId );
+      
+
   
       const contract = await connectToContract();
       await contract.askForLoan( _nftId, _nftAddress, _amount, _loanClosingDuration, _loanDuration);
@@ -142,10 +150,10 @@ function App() {
       {userAccount && (
         <div  className="chinnaApp">
           <div className='info'>
-            <p>User Account: {userAccount}</p>
+            <p>User Account: {userAccount.substring(0,5)}</p>
             <p>User Balance: {userBalance}</p>
           </div>
-          <button onClick={() => setShowModal(true)} >Ask for Loan</button>
+          <button className="askForLoan" onClick={() => setShowModal(true)} >Ask for Loan</button>
           <Input onClose={() => setShowModal(false)} askForLoan =  {askForLoan} show={showModal} />
           {showError && (
           <div className="errorBox">
@@ -165,7 +173,7 @@ function App() {
           )}
           {details && (
             <div>
-              <Details details = {details} connectToContract = {connectToContract} getDetails = {getDetails} userAccount = {userAccount} />
+              <Details setError={setError} setShowError ={setShowError} details = {details} connectToContract = {connectToContract} getDetails = {getDetails} userAccount = {userAccount}/>
             </div>
           )}
         </div>

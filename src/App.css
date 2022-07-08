@@ -1,14 +1,14 @@
 .detail{
-  width: 400px;
   border: 2px solid #B8043B;
-  margin: 5px;
-  padding: 5px;
+  margin: 7px;
+  padding: 7px;
 }
 
 html, body {
   height: 100%;
   background-color: black;
   color: white;
+  padding: 5px;
 }
 
 h1{
@@ -51,8 +51,8 @@ h1{
 
 .errorBox{
   border: 1px solid red;
-  padding: 5px;
-  margin: 4px;
+  padding: 10px;
+  margin: 10px;
 }
 
 .errorBox > h1{
@@ -60,6 +60,19 @@ h1{
   padding: 0px;
   margin: 1px;
 }
+.askForLoan{
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 8px;
+  width: 160px;
+  height: 40px;
+  border: 2px solid #B8043B;
+  background-color: black;
+  color: white;
+  
+}
+
 
 
 
