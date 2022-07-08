@@ -20,6 +20,8 @@ function App() {
   const [details, setDetails] = useState();
   const [userBalance, setUserBalance] = useState("");
   const [showModal,setShowModal ] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [error, setError] = useState();
 
 
 //<---------------------------------------------------------------------------------------------------------------------->
@@ -55,7 +57,7 @@ function App() {
     
     let accounts =await ethereum.request( {method: "eth_requestAccounts"});
     
-    setUserAccount(accounts[0]);
+    setUserAccount(accounts[0].substring(0,5));
     console.log("connected to: ", accounts[0]);
     
     getDetails();
@@ -100,23 +102,28 @@ function App() {
 
   //Contract functions 
   const askForLoan = async( _nftId, _nftAddress, _amount, _loanClosingDuration, _loanDuration ) => {
-    const {ethereum} = window;
-
-    if(!ethereum){
-      alert("Get Metamask");
-      return;
+    try{
+      const {ethereum} = window;
+  
+      if(!ethereum){
+        alert("Get Metamask");
+        return;
+      }
+  
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const nftContract = new ethers.Contract(_nftAddress,nftAbi.abi, signer);
+  
+      await nftContract.approve(ContractAddress, _nftId );
+  
+      const contract = await connectToContract();
+      await contract.askForLoan( _nftId, _nftAddress, _amount, _loanClosingDuration, _loanDuration);
+  
+      getDetails();
+    } catch(_error){
+      console.log(_error.message);
+      setError(_error.message);
     }
-
-    const provider = new ethers.providers.Web3Provider(ethereum);
-    const signer = provider.getSigner();
-    const nftContract = new ethers.Contract(_nftAddress,nftAbi.abi, signer);
-
-    await nftContract.approve(ContractAddress, _nftId );
-
-    const contract = await connectToContract();
-    await contract.askForLoan( _nftId, _nftAddress, _amount, _loanClosingDuration, _loanDuration);
-
-    getDetails();
   }
 
 //<---------------------------------------------------------------------------------------------------------------------->
@@ -127,6 +134,7 @@ function App() {
       <h1>NFT LOAN DAPP</h1>
       { !userAccount && (
         <div>
+          <p>Connect your wallet to use the Dapp</p>
           <button onClick={connectToWallet}> Connect to wallet </button>
         </div>
       )}
@@ -139,6 +147,20 @@ function App() {
           </div>
           <button onClick={() => setShowModal(true)} >Ask for Loan</button>
           <Input onClose={() => setShowModal(false)} askForLoan =  {askForLoan} show={showModal} />
+
+          <div className="errorBox">
+            <h1>
+              Error!
+            </h1>
+            <p>{error}</p>
+          </div>
+
+
+          {!details && (
+            <div>
+              <p>Fetching the details</p>
+            </div>
+          )}
           {details && (
             <div>
               <Details details = {details} connectToContract = {connectToContract} getDetails = {getDetails} userAccount = {userAccount} />
