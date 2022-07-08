@@ -121,8 +121,8 @@ function App() {
   
       getDetails();
     } catch(_error){
-      console.log(_error.message);
       setError(_error.message);
+      setShowError(true)
     }
   }
 
@@ -147,13 +147,15 @@ function App() {
           </div>
           <button onClick={() => setShowModal(true)} >Ask for Loan</button>
           <Input onClose={() => setShowModal(false)} askForLoan =  {askForLoan} show={showModal} />
-
+          {showError && (
           <div className="errorBox">
             <h1>
               Error!
             </h1>
             <p>{error}</p>
+            <button onClick={() => setShowError(false)} >Clear error</button>
           </div>
+          )}
 
 
           {!details && (
