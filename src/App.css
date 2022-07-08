@@ -1,5 +1,43 @@
+.detail{
+  width: 400px;
+  border: 2px solid black;
+  margin: 5px;
+  padding: 5px;
+}
+
+.Details{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+}
 .App {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.chinnaApp{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.info{
+  border: 1px solid black;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  margin: 3px;
+}
+
+.info > * {
+  padding: 1px;
+  margin: 1px;
 }
 
 .App-logo {
