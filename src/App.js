@@ -15,7 +15,7 @@ import nftAbi from "./utils/nftAbi.json"
 
 function App() {
   //Variables
-  let goerliAddress = "0x0EA92e97f4E79aCEDD6666B59924C4Cb8cd32ccc";
+  let goerliAddress = "0x66eAb821ecb2A399850782FdfD7b1D8FF3Fc91c4";
 
   const [userAccount, setUserAccount] = useState();
   const [details, setDetails] = useState();
@@ -23,6 +23,7 @@ function App() {
   const [showModal,setShowModal ] = useState(false);
   const [showError, setShowError] = useState(false);
   const [error, setError] = useState();
+  const [dropDownValue, setDropDownValue] = useState("1");
 
 
 //<---------------------------------------------------------------------------------------------------------------------->
@@ -45,7 +46,6 @@ function App() {
     const provider = new ethers.providers.Web3Provider(ethereum);
     let chainId = await provider.getNetwork()
     chainId = chainId.chainId;
-    console.log(chainId);
     if(chainId !== 5){
       alert("Change network to goerli");
     }
@@ -54,6 +54,10 @@ function App() {
   useEffect( () => {
     isWalletConnected();
   }, []);
+
+  window.ethereum.on('accountsChanged', function () {
+    isWalletConnected();
+  })
   
   const connectToWallet = async() => {
     const {ethereum} = window;
@@ -128,11 +132,13 @@ function App() {
   const askForLoan = async( _nftId, _nftAddress, _amount, _loanClosingDuration, _loanDuration ) => {
     try{
       const nftContract = await connectToNftContract(_nftAddress);
-      await nftContract.approve(goerliAddress, _nftId );
+      const nftTx = await nftContract.approve(goerliAddress, _nftId );
+      await nftTx.wait();
       
       const contract = await connectToContract();
-      await contract.askForLoan( _nftId, _nftAddress, _amount, _loanClosingDuration, _loanDuration);
-  
+      const tx = await contract.askForLoan( _nftId, _nftAddress, _amount, _loanClosingDuration, _loanDuration);
+      await tx.wait();
+
       getDetails();
     } catch(_error){
       setError(_error.message);
@@ -160,6 +166,10 @@ function App() {
             <p>User Balance: {userBalance}</p>
           </div>
           <button className="askForLoan bigBtn" onClick={() => setShowModal(true)} >Ask for Loan</button>
+          <select className='dropDown' value={dropDownValue} onChange={(e) => setDropDownValue(e.target.value)} >
+            <option value="1">Open loans </option>
+            <option value="2"> Your loans</option>
+          </select>
           <Input onClose={() => setShowModal(false)} askForLoan =  {askForLoan} show={showModal} />
           {showError && (
           <div className="errorBox">
@@ -179,7 +189,7 @@ function App() {
           )}
           {details && (
             <div>
-              <Details setError={setError} setShowError ={setShowError} details = {details} connectToContract = {connectToContract} getDetails = {getDetails} userAccount = {userAccount} />
+              <Details setError={setError} setShowError ={setShowError} details = {details} connectToContract = {connectToContract} getDetails = {getDetails} userAccount = {userAccount} dropDownValue = {dropDownValue} />
             </div>
           )}
         </div>

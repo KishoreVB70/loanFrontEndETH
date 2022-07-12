@@ -35,6 +35,13 @@ html, body {
   color: black;
 }
 
+.dropDown{
+  position: absolute;
+  left: 2%;
+  top: 10%;
+  margin: 8px;  
+}
+
 .bigBtn{
   text-decoration: none;
   color: rgba(255, 255, 255, 0.8);
@@ -53,11 +60,19 @@ html, body {
   background-color: #26020d;
 }
 
+.askForLoan{
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 8px;  
+}
 .detail{
   border: 2px solid #B8043B;
   margin: 7px;
   padding: 7px;
 }
+
+
 
 
 h1{
@@ -96,12 +111,6 @@ h1{
   font-size: 30px;
   padding: 0px;
   margin: 1px;
-}
-.askForLoan{
-  position: absolute;
-  left: 0;
-  top: 0;
-  margin: 8px;  
 }
 
 
